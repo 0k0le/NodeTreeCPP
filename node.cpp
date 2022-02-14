@@ -18,8 +18,11 @@ namespace algo {
             node *_parent;
             vector <node *> _children;
             int _value = 0;
+            unsigned int _largestHeight = 0;
 
         public:
+            unsigned int height = 0;
+
             node(node *parent, int value);
             node(int value);
             ~node();
@@ -27,18 +30,23 @@ namespace algo {
             vector<node *> *GetChildren();
             node *GetParent();
             bool Search(int value);
+            unsigned int TreeHeight();
     };
 
     node::node(node *parent, int value) {
         // Copy parent
         _parent = parent;
         _value = value;
+        if(_parent != nullptr)
+            height = _parent->height + 1;
+        _largestHeight = static_cast<unsigned int>(height);
     }
 
     // Constructor for parent node
     node::node(int value) {
         _value = value;
         _parent = nullptr;
+        _largestHeight = height;
     }
     
     node::~node() {
@@ -80,6 +88,18 @@ namespace algo {
 
         return ret;
     }
+
+    unsigned int node::TreeHeight() {
+        unsigned int largest = height;
+        
+        for(long unsigned int i = 0; i < _children.size(); i++) {
+            largest = _children[i]->TreeHeight();
+            if(largest > _largestHeight)
+                _largestHeight = largest;
+        }
+
+        return _largestHeight;
+    }
 }
 
 int main(int argc, char **argv) {
@@ -98,18 +118,24 @@ int main(int argc, char **argv) {
     parent->AddChild(3);
 
     // Create 2 children of child nodes of parent
-    vector<algo::node *> *child = parent->GetChildren();
-    (*child)[0]->AddChild(4);
-    (*child)[1]->AddChild(5);
+    (*(parent->GetChildren()))[0]->AddChild(4);
+    (*(parent->GetChildren()))[1]->AddChild(5);
 
     // Another child of child of child...
-    child = (*child)[0]->GetChildren();
-    (*child)[0]->AddChild(6);
+    (*(*(parent->GetChildren()))[0]->GetChildren())[0]->AddChild(6);
+    (*(*(parent->GetChildren()))[1]->GetChildren())[0]->AddChild(7);
+
+    (*(*(*(parent->GetChildren()))[1]->GetChildren())[0]->GetChildren())[0]->AddChild(8);
+    (*(*(*(parent->GetChildren()))[0]->GetChildren())[0]->GetChildren())[0]->AddChild(9);
+
+    (*(*(*(*(parent->GetChildren()))[1]->GetChildren())[0]->GetChildren())[0]->GetChildren())[0]->AddChild(10);
 
     if(parent->Search(sVal) == true)
         cout << sVal << " Found!" << endl;
     else
         cout << sVal << " Not Found!" << endl;
+
+    cout << "Tree Height: " << parent->TreeHeight() << endl;
 
     delete parent;
 
