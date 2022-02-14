@@ -90,12 +90,10 @@ namespace algo {
     }
 
     unsigned int node::TreeHeight() {
-        unsigned int largest = height;
-        
         for(long unsigned int i = 0; i < _children.size(); i++) {
-            largest = _children[i]->TreeHeight();
-            if(largest > _largestHeight)
-                _largestHeight = largest;
+            auto ret = _children[i]->TreeHeight();
+            if(ret > _largestHeight)
+                _largestHeight = ret;
         }
 
         return _largestHeight;
