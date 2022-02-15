@@ -4,11 +4,13 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cstring>
 #include <vector>
 
 using std::vector;
 using std::cout;
 using std::endl;
+using std::cerr;
 
 #define _DEBUG
 
@@ -71,6 +73,7 @@ namespace algo {
     // Get parent node 
     node *node::GetParent() { return _parent; }
 
+    // Search for value in tree
     bool node::Search(int value) {
         bool ret = false; 
         
@@ -78,11 +81,13 @@ namespace algo {
     cout << "Searching node with a value of " << _value << " for " << value << endl;
 #endif
 
+        // current node is the value, return
         if(value == _value)
             return true;
 
-        for(long unsigned int i = 0; i < _children.size(); i++) {
-            if((ret = _children[i]->Search(value)))
+        // Go down the list...
+        for(long unsigned i = 0; i < _children.size(); i++) {
+            if((ret = _children[i]->Search(value))) // Break and return true if value is found
                 break;
         }
 
@@ -90,7 +95,8 @@ namespace algo {
     }
 
     unsigned int node::TreeHeight() {
-        for(long unsigned int i = 0; i < _children.size(); i++) {
+        // Go down the list...
+        for(long unsigned i = 0; i < _children.size(); i++) {
             auto ret = _children[i]->TreeHeight();
             if(ret > _largestHeight)
                 _largestHeight = ret;
@@ -100,15 +106,39 @@ namespace algo {
     }
 }
 
+// namespace for working on cstrings...
+namespace cstring {
+    // Check if string only contains numbers
+    bool IsNumber(const char *str) {
+        auto len = strlen(str); 
+        
+        for(decltype(len) i = 0; i < len; i++) {
+            if(str[i] < 48 || str[i] > 57)
+                return false;
+        }
+
+        return true;
+    }
+}
+
+void usage(char *) __attribute__((noreturn));
+void usage(char *arg1) {
+    cout << "Usage: " << arg1 << " [SEARCH_VALUE]" << endl;
+    exit(EXIT_FAILURE); 
+}
+
 int main(int argc, char **argv) {
-    if(argc < 2)
-        return EXIT_FAILURE;
-
-    int sVal = atoi(argv[1]);
-
-    cout << "Node tree tester" << endl;
+    cout << "Node Tree Tester!" << endl;
    
-    algo::node *parent = new algo::node(0);
+    // User input check 
+    if(argc < 2 || !cstring::IsNumber(argv[1]))
+        usage(argv[0]);
+
+    // Convert user input
+    auto sVal = atoi(argv[1]);
+
+    // Create parent node
+    auto parent = new algo::node(0);
 
     // Create 3 children of parent node  
     parent->AddChild(1);
@@ -123,16 +153,20 @@ int main(int argc, char **argv) {
     (*(*(parent->GetChildren()))[0]->GetChildren())[0]->AddChild(6);
     (*(*(parent->GetChildren()))[1]->GetChildren())[0]->AddChild(7);
 
+    // You get it...
     (*(*(*(parent->GetChildren()))[1]->GetChildren())[0]->GetChildren())[0]->AddChild(8);
     (*(*(*(parent->GetChildren()))[0]->GetChildren())[0]->GetChildren())[0]->AddChild(9);
 
+    // Ok fine i'll stop
     (*(*(*(*(parent->GetChildren()))[1]->GetChildren())[0]->GetChildren())[0]->GetChildren())[0]->AddChild(10);
 
+    // Start search
     if(parent->Search(sVal) == true)
         cout << sVal << " Found!" << endl;
     else
         cout << sVal << " Not Found!" << endl;
 
+    // Calculate tree height
     cout << "Tree Height: " << parent->TreeHeight() << endl;
 
     delete parent;
