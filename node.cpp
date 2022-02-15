@@ -17,38 +17,32 @@ using std::cerr;
 namespace algo {
     class node {
         private:
-            node *_parent;
-            vector <node *> _children;
-            int _value = 0;
-            unsigned int _largestHeight = 0;
+            node *_parent;                      // ptr to parent
+            vector <node *> _children;          // List of children
+            int _value = 0;                     // internal value
+            unsigned int _largestHeight = 0;    // Used as to calculate height of tree
 
         public:
-            unsigned int height = 0;
-
             node(node *parent, int value);
             node(int value);
             ~node();
-            void AddChild(int value);
-            vector<node *> *GetChildren();
-            node *GetParent();
-            bool Search(int value);
-            unsigned int TreeHeight();
+            void AddChild(int value);           // Create child
+            vector<node *> *GetChildren();      // Retrieve children
+            node *GetParent();                  // Get ptr to parent
+            bool Search(int value);             // Search for a value in the tree
+            unsigned int TreeHeight();          // Calculate tree height
     };
 
     node::node(node *parent, int value) {
         // Copy parent
         _parent = parent;
         _value = value;
-        if(_parent != nullptr)
-            height = _parent->height + 1;
-        _largestHeight = static_cast<unsigned int>(height);
     }
 
     // Constructor for parent node
     node::node(int value) {
         _value = value;
         _parent = nullptr;
-        _largestHeight = height;
     }
     
     node::~node() {
